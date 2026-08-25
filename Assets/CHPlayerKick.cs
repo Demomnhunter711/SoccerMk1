@@ -15,7 +15,8 @@ public class CHPlayerKick : MonoBehaviour
 
             if(distance <= kickRange)
             {
-                ball.AddForce(transform.forward * kickPower, ForceMode.Impulse);
+             Vector3 kickDirection = transform.forward;
+             ball.AddForce(kickDirection * kickPower, ForceMode.Impulse);
             }
         }
     }
