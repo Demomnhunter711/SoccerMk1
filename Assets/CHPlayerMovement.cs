@@ -1,22 +1,19 @@
-// using System.Numerics;
-// using Unity.Mathematics;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
     public float moveSpeed = 5f;
-    private Rigidbody rb;
+    public float acceleration = 10f;
+    public float rotationSpeed = 10f;
+
     public Transform cameraTransform;
 
-    void Start()
-    {
-        rb = GetComponent<Rigidbody>();
-    }
+    private Vector3 currentVelocity;
 
-    void FixedUpdate()
+    void Update()
     {
-        float horizontal = Input.GetAxis("Horizontal");
-        float vertical = Input.GetAxis("Vertical");
+        float horizontal = Input.GetAxisRaw("Horizontal");
+        float vertical = Input.GetAxisRaw("Vertical");
 
         Vector3 forward = cameraTransform.forward;
         Vector3 right = cameraTransform.right;
@@ -26,26 +23,36 @@ public class PlayerMovement : MonoBehaviour
 
         forward.Normalize();
         right.Normalize();
-//
-        Vector3 movement = forward * vertical + right * horizontal;
 
+        Vector3 movement =
+            forward * vertical +
+            right * horizontal;
 
-
-        rb.linearVelocity = new Vector3(
-            movement.x * moveSpeed,
-            rb.linearVelocity.y,
-            movement.z * moveSpeed
-        );
-
-        if ( movement != Vector3.zero)
+        if (movement.magnitude > 1f)
         {
-            Quaternion targetRotation = Quaternion.LookRotation(movement);
-
-            transform.rotation = Quaternion.Slerp(transform.rotation,
-            targetRotation,
-            10f * Time.deltaTime);
+            movement.Normalize();
         }
 
-        transform.position += movement * moveSpeed * Time.deltaTime;
+        Vector3 targetVelocity = movement * moveSpeed;
+
+        currentVelocity = Vector3.MoveTowards(
+            currentVelocity,
+            targetVelocity,
+            acceleration * Time.deltaTime
+        );
+
+        transform.position += currentVelocity * Time.deltaTime;
+
+        if (movement != Vector3.zero)
+        {
+            Quaternion targetRotation =
+                Quaternion.LookRotation(movement);
+
+            transform.rotation = Quaternion.Slerp(
+                transform.rotation,
+                targetRotation,
+                rotationSpeed * Time.deltaTime
+            );
+        }
     }
 }
