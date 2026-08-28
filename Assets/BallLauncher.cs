@@ -18,4 +18,8 @@ public class BallLauncher : MonoBehaviour
             ForceMode.Impulse
         );
     }
+    void Start()
+    {
+    LaunchBall();
+    }
 }
