@@ -2,16 +2,38 @@ using UnityEngine;
 
 public class TargetIndicator : MonoBehaviour
 {
-    public Transform player;
     public Transform target;
+    public Transform cameraTransform;
     public RectTransform arrow;
 
     void Update()
     {
-        Vector3 direction = target.position - player.position;
+        Vector3 directionToTarget =
+            target.position - cameraTransform.position;
 
-        float angle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg;
+        directionToTarget.y = 0f;
 
-        arrow.rotation = Quaternion.Euler(0, 0, -angle);
+        Vector3 cameraForward = cameraTransform.forward;
+        cameraForward.y = 0f;
+        cameraForward.Normalize();
+
+        Vector3 cameraRight = cameraTransform.right;
+        cameraRight.y = 0f;
+        cameraRight.Normalize();
+
+        directionToTarget.Normalize();
+
+        float forwardAmount =
+            Vector3.Dot(directionToTarget, cameraForward);
+
+        float rightAmount =
+            Vector3.Dot(directionToTarget, cameraRight);
+
+        float angle =
+            Mathf.Atan2(rightAmount, forwardAmount)
+            * Mathf.Rad2Deg;
+
+        arrow.localRotation =
+            Quaternion.Euler(0f, 0f, -angle);
     }
 }

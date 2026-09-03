@@ -2,11 +2,12 @@ using UnityEngine;
 
 public class CameraFollow : MonoBehaviour
 {
-     public Transform player;
+    public Transform player;
 
-    public float mouseSensitivity = 200f;
+    public float mouseSensitivity = 2f;
     public float distance = 8f;
-    public float height = 5f;
+    public float height = 3f;
+    public float smoothSpeed = 12f;
 
     private float yaw = 0f;
     private float pitch = 20f;
@@ -15,62 +16,33 @@ public class CameraFollow : MonoBehaviour
     {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        yaw = transform.eulerAngles.y;
     }
 
     void LateUpdate()
     {
-        // Get mouse movement
-        float mouseX = Input.GetAxis("Mouse X");
-        float mouseY = Input.GetAxis("Mouse Y");
+        float mouseX = Input.GetAxisRaw("Mouse X");
+        float mouseY = Input.GetAxisRaw("Mouse Y");
 
-        // Rotate camera based on mouse
-        yaw += mouseX * mouseSensitivity * Time.deltaTime;
-        pitch -= mouseY * mouseSensitivity * Time.deltaTime;
+        yaw += mouseX * mouseSensitivity;
+        pitch -= mouseY * mouseSensitivity;
 
-        // Prevent camera from going upside down
         pitch = Mathf.Clamp(pitch, -10f, 60f);
 
-        // Create camera rotation
-        Quaternion rotation = Quaternion.Euler(pitch, yaw, 0);
+        Quaternion rotation = Quaternion.Euler(pitch, yaw, 0f);
 
-        // Position camera behind player
-        Vector3 offset = rotation * new Vector3(0, 0, -distance);
+        Vector3 desiredPosition =
+            player.position
+            + Vector3.up * height
+            + rotation * new Vector3(0f, 0f, -distance);
 
-        transform.position = player.position + offset + Vector3.up * height;
+        transform.position = Vector3.Lerp(
+            transform.position,
+            desiredPosition,
+            smoothSpeed * Time.deltaTime
+        );
 
-        // Look toward player
-        transform.LookAt(player.position + Vector3.up * 1f);
+        transform.LookAt(player.position + Vector3.up);
     }
-    // public Transform player;
-    // public float mouseSensitvitiy = 200f;
-    // public float distance = 8f;
-    // public float height = 5f;
-    // private float rotationY = 0f;
-
-    // void LateUpdate()
-    // {
-    //     //getting mouse movement
-    //     float mouseX = Input.GetAxis("Mouse X");
-
-    //     //rotate camera around player
-    //     rotationY += mouseX * mouseSensitvitiy * Time.deltaTime;
-
-    //     //Calculate camera position
-    //     Quaternion rotation = Quaternion.Euler(0,rotationY, 0);
-
-    //     Vector3 offset = rotation * new Vector3(0, height, -distance);
-
-    //     transform.position = player.position + offset;
-
-    //     //Look at the Player
-    //     transform.LookAt(player.position);
-    // }
-   // public Transform target;
-
-   // public Vector3 offset = new Vector3(0, 8, -8);
-
-    // void LateUpdate()
-    // {
-    //     transform.position = target.position + offset;
-    // }
 }
