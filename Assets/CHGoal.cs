@@ -12,6 +12,7 @@ public class CHGoal : MonoBehaviour
             Debug.Log("GOAL!");
 
             gameManager.AddGoal();
+            
         }
     }
 }

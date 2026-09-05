@@ -6,6 +6,7 @@ using TMPro.EditorUtilities;
 public class GameManager : MonoBehaviour
 {
     public int score = 0;
+    public BallLauncher ballLauncher;
     public Rigidbody ball;
     public Transform ballStartPosition;
     public TMP_Text scoreText;
@@ -25,7 +26,8 @@ public class GameManager : MonoBehaviour
 
         scoreText.text = "Score: " + score;
 
-        ResetBall();
+        ballLauncher.LaunchBall();
+       // ResetBall();
     }
 
     void Update()
